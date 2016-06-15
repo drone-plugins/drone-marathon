@@ -1,0 +1,30 @@
+build:
+  test:
+    image: golang:1.5
+    environment:
+      - CGO_ENABLED=0
+      - GO15VENDOREXPERIMENT=1
+    commands:
+      - go test drone-marathon/marathon -cover -coverprofile=coverage.out
+      - go build -ldflags "-s -w -X main.build=$DRONE_BUILD_NUMBER"
+    when:
+      event: push
+
+publish:
+  docker:
+    username: $$DOCKER_USER
+    password: $$DOCKER_PASS
+    email: $$DOCKER_EMAIL
+    repo: plugins/marathon
+    tag: latest
+
+plugin:
+  name: Marathon
+  desc: Publish applications to Mesos cluster through Marathon
+  type: publish
+  image: plugins/marathon
+  labels:
+    - mesos
+    - marathon
+    - cluster
+    - docker
