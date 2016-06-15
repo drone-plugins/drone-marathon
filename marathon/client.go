@@ -62,8 +62,10 @@ func (c *client) normalizeDockerPortMappings() {
 
 func (c *client) CreateOrUpdateApplication() error {
 	appDefinition, err := c.GenerateApplicationDefinition()
-	if err != nil {	return err }
-	
+	if err != nil {
+		return err
+	}
+
 	if c.params.Debug {
 		fmt.Println("Request", appDefinition)
 	}
@@ -71,33 +73,37 @@ func (c *client) CreateOrUpdateApplication() error {
 	payload := []byte(appDefinition)
 
 	status, body, err := c.sendToServer("POST", "/v2/apps", payload)
-	if err != nil {	return err }
+	if err != nil {
+		return err
+	}
 
 	if status == http.StatusConflict {
 		status, body, err = c.sendToServer("PUT", "/v2/apps/"+c.params.ID, payload)
-		if err != nil {	return err }
+		if err != nil {
+			return err
+		}
 	}
 
-    if c.params.Debug {
+	if c.params.Debug {
 		if err == nil {
-	    	fmt.Printf("Response (%v): %s\n", status, body)
+			fmt.Printf("Response (%v): %s\n", status, body)
 		} else {
 			fmt.Println("Error:", err)
 		}
-    }
-	
-	if err == nil && status != http.StatusCreated && status != http.StatusOK {
-		err = fmt.Errorf("Response (%v): %s\n", status, body)	
 	}
-	
-    return err
+
+	if err == nil && status != http.StatusCreated && status != http.StatusOK {
+		err = fmt.Errorf("Response (%v): %s\n", status, body)
+	}
+
+	return err
 }
 
 func (c *client) sendToServer(action, path string, definition []byte) (int, string, error) {
 	req, err := http.NewRequest(action, c.params.Server+path, bytes.NewBuffer(definition))
-    if c.params.Username != "" && c.params.Password != "" {
-        req.SetBasicAuth(c.params.Username, c.params.Password)
-    }
+	if c.params.Username != "" && c.params.Password != "" {
+		req.SetBasicAuth(c.params.Username, c.params.Password)
+	}
 	req.Header.Set("Content-Type", "application/json")
 	httpclient := &http.Client{}
 	resp, err := httpclient.Do(req)

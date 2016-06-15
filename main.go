@@ -1,13 +1,14 @@
 package main
 
 import (
-    "fmt"
-    "os"
-	"strings"
 	"encoding/json"
-	"drone-marathon/marathon"
+	"fmt"
+	"os"
+	"strings"
 
 	"github.com/codegangsta/cli"
+	"github.com/drone-plugins/drone-marathon/marathon"
+
 	_ "github.com/joho/godotenv/autoload"
 )
 
@@ -158,7 +159,7 @@ func main() {
 			Name:   "docker_port_mappings",
 			Usage:  "an array of host-container port mapping",
 			EnvVar: "PLUGIN_DOCKER_PORT_MAPPINGS",
-		},		
+		},
 		cli.StringFlag{
 			Name:   "docker_volumes",
 			Usage:  "an array of volumes mapped in the container",
@@ -180,37 +181,37 @@ func main() {
 
 func run(c *cli.Context) error {
 	plugin := Plugin{
-		Marathon: marathon.Marathon {
-			Server:            		c.String("server"),
-			Username:          		c.String("username"),
-			Password:          		c.String("password"),
-			ID:   		       		c.String("id"),
-			Instances:         		c.Int("instances"),
-			Cpus: 		       		c.Float64("cpus"),
-			Mem:		       		c.Float64("mem"),
-			Cmd:		       		c.String("cmd"),
-			Args:		       		convertToSlice(c.String("args")),
-			Uris:              		convertToSlice(c.String("uris")),
-			Fetchs:                 convertToFetchs(c.String("fetch")),
-			MinHealthCapacity: 		c.Float64("min_health_capacity"),
-			MaxOverCapacity:   		c.Float64("max_over_capacity"),
-			HealthChecks:      		convertToHealthChecks(c.String("health_checks")),
-			Constraints:       		convertToConstraints(c.String("constraints")),
-			AcceptedResourceRoles: 	convertToSlice(c.String("accepted_resource_roles")),
-			BackoffFactor:			c.Float64("backoff_factor"),
-			BackoffSeconds:         c.Int("backoff_seconds"),
-			MaxLaunchDelaySeconds:  c.Int("max_launch_delay_seconds"),
-			Dependencies: 			convertToSlice(c.String("dependencies")),
-			Disk:                   c.Float64("disk"),
-			ProcessEnv:       		convertToMap(c.String("process_environment")),			
-			DockerImage:       		c.String("docker_image"),
-			DockerNetwork:          c.String("docker_network"),
-			DockerForcePull:   		c.Bool("docker_force_pull"),
-			DockerPrivileged:  		c.Bool("docker_privileged"),
-			DockerPortMappings:		convertToDockerPortMappings(c.String("docker_port_mappings")),
-			DockerVolumes:     		convertToDockerVolumes(c.String("docker_volumes")),
-			DockerParams:      		convertToMap(c.String("docker_parameters")),
-			Debug:					c.Bool("debug"),
+		Marathon: marathon.Marathon{
+			Server:                c.String("server"),
+			Username:              c.String("username"),
+			Password:              c.String("password"),
+			ID:                    c.String("id"),
+			Instances:             c.Int("instances"),
+			Cpus:                  c.Float64("cpus"),
+			Mem:                   c.Float64("mem"),
+			Cmd:                   c.String("cmd"),
+			Args:                  convertToSlice(c.String("args")),
+			Uris:                  convertToSlice(c.String("uris")),
+			Fetchs:                convertToFetchs(c.String("fetch")),
+			MinHealthCapacity:     c.Float64("min_health_capacity"),
+			MaxOverCapacity:       c.Float64("max_over_capacity"),
+			HealthChecks:          convertToHealthChecks(c.String("health_checks")),
+			Constraints:           convertToConstraints(c.String("constraints")),
+			AcceptedResourceRoles: convertToSlice(c.String("accepted_resource_roles")),
+			BackoffFactor:         c.Float64("backoff_factor"),
+			BackoffSeconds:        c.Int("backoff_seconds"),
+			MaxLaunchDelaySeconds: c.Int("max_launch_delay_seconds"),
+			Dependencies:          convertToSlice(c.String("dependencies")),
+			Disk:                  c.Float64("disk"),
+			ProcessEnv:            convertToMap(c.String("process_environment")),
+			DockerImage:           c.String("docker_image"),
+			DockerNetwork:         c.String("docker_network"),
+			DockerForcePull:       c.Bool("docker_force_pull"),
+			DockerPrivileged:      c.Bool("docker_privileged"),
+			DockerPortMappings:    convertToDockerPortMappings(c.String("docker_port_mappings")),
+			DockerVolumes:         convertToDockerVolumes(c.String("docker_volumes")),
+			DockerParams:          convertToMap(c.String("docker_parameters")),
+			Debug:                 c.Bool("debug"),
 		},
 	}
 
@@ -218,27 +219,27 @@ func run(c *cli.Context) error {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	
+
 	return nil
 }
 
-func convertToSlice(s string) []string  {
-	result := []string{} 
+func convertToSlice(s string) []string {
+	result := []string{}
 	if s != "" {
 		result = strings.Split(s, ",")
 	}
 	return result
 }
 
-func convertToMap(s string) map[string]string  {
+func convertToMap(s string) map[string]string {
 	result := make(map[string]string)
 	if s != "" {
 		json.Unmarshal([]byte(s), &result)
 	}
-	return result	
+	return result
 }
 
-func convertToFetchs(s string) []marathon.Fetch  {
+func convertToFetchs(s string) []marathon.Fetch {
 	result := []marathon.Fetch{}
 	if s != "" {
 		json.Unmarshal([]byte(s), &result)
@@ -254,7 +255,7 @@ func convertToHealthChecks(s string) []marathon.HealthCheck {
 	return result
 }
 
-func convertToConstraints(s string) []marathon.Constraint  {
+func convertToConstraints(s string) []marathon.Constraint {
 	result := []marathon.Constraint{}
 	if s != "" {
 		json.Unmarshal([]byte(s), &result)
@@ -270,7 +271,7 @@ func convertToDockerPortMappings(s string) []marathon.DockerPortMapping {
 	return result
 }
 
-func convertToDockerVolumes(s string) []marathon.DockerVolume  {
+func convertToDockerVolumes(s string) []marathon.DockerVolume {
 	result := []marathon.DockerVolume{}
 	if s != "" {
 		json.Unmarshal([]byte(s), &result)

@@ -1,11 +1,11 @@
 package marathon
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"unicode"
-	"net/http"
-	"net/http/httptest"
 )
 
 func TestGenerateSimple(t *testing.T) {
@@ -15,7 +15,7 @@ func TestGenerateSimple(t *testing.T) {
 	m.Cpus = 0.10
 	m.Mem = 128.1
 	m.Instances = 10
-    m.Cmd = "cmd foo bar"
+	m.Cmd = "cmd foo bar"
 	m.BackoffFactor = 1.54
 	m.BackoffSeconds = 2
 	m.MaxLaunchDelaySeconds = 600
@@ -29,7 +29,7 @@ func TestGenerateSimple(t *testing.T) {
 		{`"cpus":0.1`, "Cpus"},
 		{`"mem":128.1`, "Mem"},
 		{`"instances":10`, "Instances"},
-        {`"cmd":"cmdfoobar"`, "Cmd"},
+		{`"cmd":"cmdfoobar"`, "Cmd"},
 		{`"backoffFactor":1.54`, "BackoffFactor"},
 		{`"backoffSeconds":2`, "BackoffSeconds"},
 		{`"maxLaunchDelaySeconds":600`, "MaxLaunchDelaySeconds"},
@@ -86,12 +86,12 @@ func TestGenerateUris(t *testing.T) {
 	}
 }
 
-func TestGenerateFetch(t *testing.T)  {
+func TestGenerateFetch(t *testing.T) {
 	m := new(Marathon)
 	client := NewClient(m)
 	m.Fetchs = []Fetch{
 		{Uri: "https://foo.com/archive.zip",
-		Executable: false, Extract: true, Cache: false},
+			Executable: false, Extract: true, Cache: false},
 	}
 
 	conf := generateAppDef(client, t)
@@ -289,7 +289,7 @@ func TestGenerateDockerVolumes(t *testing.T) {
 func TestGenerateDockerParams(t *testing.T) {
 	m := new(Marathon)
 	client := NewClient(m)
-	m.DockerImage = "someimg"	
+	m.DockerImage = "someimg"
 	m.DockerParams = make(map[string]string)
 	m.DockerParams["foo"] = "bar"
 	m.DockerParams["STATUS"] = "EMPTY"
@@ -302,7 +302,7 @@ func TestGenerateDockerParams(t *testing.T) {
 	}
 }
 
-func TestMarathonStatusCodes(t *testing.T)  {
+func TestMarathonStatusCodes(t *testing.T) {
 	NoError := false
 	Error := true
 	checkRequest(http.StatusCreated, NoError, t)
@@ -313,7 +313,7 @@ func TestMarathonStatusCodes(t *testing.T)  {
 	checkRequest(422, Error, t)
 }
 
-func checkRequest(statusCode int, expectError bool, t *testing.T)  {
+func checkRequest(statusCode int, expectError bool, t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(statusCode)
 	}))
