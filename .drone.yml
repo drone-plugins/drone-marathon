@@ -5,8 +5,6 @@ workspace:
 pipeline:
   test:
     image: golang:1.6
-    environment:
-      - CGO_ENABLED=0
     commands:
       - make vet
       - make build
