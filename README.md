@@ -2,32 +2,32 @@
 
 Drone plugin to deploy applications to [Marathon](https://mesosphere.github.io/marathon/). For the usage information and a listing of the available options please take a look at [the docs](DOCS.md).
 
-**Please note that this plugin is compatible only with the still unreleased Drone version 0.5** 
-
 ## Build
 
-Build the binary with the following commands:
+Build the binary with the following command:
 
 ```
-export GO15VENDOREXPERIMENT=1
-go build
+make build
 ```
 
 ## Docker
 
-Build the docker image with the following commands:
+Build the docker image with the following command:
 
 ```
-export GO15VENDOREXPERIMENT=1
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -a
-docker build --rm=true -t plugins/marathon .
+make docker
 ```
 
 Please note incorrectly building the image for the correct x64 linux and with GCO disabled will result in an error when running the Docker image:
 
+```
+docker: Error response from daemon: Container command
+'/bin/drone-marathon' not found or does not exist..
+```
+
 ## Usage
 
-Deploy a simple app:
+Build and publish from your current working directory:
 
 ```
 docker run --rm \

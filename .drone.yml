@@ -1,22 +1,23 @@
-build:
+workspace:
+  base: /go
+  path: src/github.com/drone-plugins/drone-marathon
+
+pipeline:
   test:
-    image: golang:1.5
+    image: golang:1.6
     environment:
       - CGO_ENABLED=0
-      - GO15VENDOREXPERIMENT=1
     commands:
-      - go test drone-marathon/marathon -cover -coverprofile=coverage.out
-      - go build -ldflags "-s -w -X main.build=$DRONE_BUILD_NUMBER"
-    when:
-      event: push
-
-publish:
+      - make vet
+      - make build
+      - make test
   docker:
-    username: $$DOCKER_USER
-    password: $$DOCKER_PASS
-    email: $$DOCKER_EMAIL
+    storage_driver: overlay
     repo: plugins/marathon
-    tag: latest
+    tag: [ "latest", "0.5" ]
+    when:
+      branch: master
+      event: push
 
 plugin:
   name: Marathon

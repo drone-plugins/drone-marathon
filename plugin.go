@@ -1,7 +1,7 @@
 package main
 
 import (
-	"drone-marathon/marathon"
+	"github.com/drone-plugins/drone-marathon/marathon"
 )
 
 type Plugin struct {
@@ -9,6 +9,6 @@ type Plugin struct {
 }
 
 func (p Plugin) Exec() error {
-    client := marathon.NewClient(&p.Marathon)
-    return client.CreateOrUpdateApplication()
+	client := marathon.NewClient(&p.Marathon)
+	return client.CreateOrUpdateApplication()
 }

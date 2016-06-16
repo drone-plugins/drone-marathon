@@ -1,76 +1,76 @@
 package marathon
 
 type Marathon struct {
-  Server                string      `json:"server"`
-  Username              string      `json:"username"`
-  Password              string      `json:"password"`
-  ID                    string      `json:"id"`
-  Instances             int         `json:"instances"`
-  Cpus                  float64     `json:"cpus"`
-  Mem                   float64     `json:"mem"` 
-  Cmd                   string      `json:"cmd"`
-  Args                  []string    `json:"args"`
-  Uris                  []string    `json:"uris"`
-  Fetchs                []Fetch     `json:"fetch"` 
-  MinHealthCapacity     float64     `json:"min_health_capacity"`
-  MaxOverCapacity       float64     `json:"max_over_capacity"`
-  HealthChecks          []HealthCheck       `json:"health_checks"`
-  Constraints           []Constraint        `json:"constraints"`
-  AcceptedResourceRoles []string            `json:"accepted_resource_roles"`
-  BackoffFactor         float64             `json:"backoff_factor"`
-  BackoffSeconds        int                 `json:"backoff_seconds"`
-  MaxLaunchDelaySeconds int                 `json:"max_launch_delay_seconds"`
-  Dependencies          []string            `json:"dependencies"`
-  Disk                  float64             `json:"disk"`
-  ProcessEnv            map[string]string   `json:"process_environment"`
-  ProcessEnvKeys        []string
-  DockerImage           string              `json:"docker_image"`
-  DockerNetwork         string              `json:"docker_network"`
-  DockerForcePull       bool                `json:"docker_force_pull"`
-  DockerPrivileged      bool                `json:"docker_privileged"`
-  DockerPortMappings    []DockerPortMapping `json:"docker_port_mappings"`
-  DockerVolumes         []DockerVolume      `json:"docker_volumes"`
-  DockerParams          map[string]string   `json:"docker_parameters"`
-  DockerParamsKeys      []string
-  Debug                 bool                `json:"debug"`
+	Server                string            `json:"server"`
+	Username              string            `json:"username"`
+	Password              string            `json:"password"`
+	ID                    string            `json:"id"`
+	Instances             int               `json:"instances"`
+	Cpus                  float64           `json:"cpus"`
+	Mem                   float64           `json:"mem"`
+	Cmd                   string            `json:"cmd"`
+	Args                  []string          `json:"args"`
+	Uris                  []string          `json:"uris"`
+	Fetchs                []Fetch           `json:"fetch"`
+	MinHealthCapacity     float64           `json:"min_health_capacity"`
+	MaxOverCapacity       float64           `json:"max_over_capacity"`
+	HealthChecks          []HealthCheck     `json:"health_checks"`
+	Constraints           []Constraint      `json:"constraints"`
+	AcceptedResourceRoles []string          `json:"accepted_resource_roles"`
+	BackoffFactor         float64           `json:"backoff_factor"`
+	BackoffSeconds        int               `json:"backoff_seconds"`
+	MaxLaunchDelaySeconds int               `json:"max_launch_delay_seconds"`
+	Dependencies          []string          `json:"dependencies"`
+	Disk                  float64           `json:"disk"`
+	ProcessEnv            map[string]string `json:"process_environment"`
+	ProcessEnvKeys        []string
+	DockerImage           string              `json:"docker_image"`
+	DockerNetwork         string              `json:"docker_network"`
+	DockerForcePull       bool                `json:"docker_force_pull"`
+	DockerPrivileged      bool                `json:"docker_privileged"`
+	DockerPortMappings    []DockerPortMapping `json:"docker_port_mappings"`
+	DockerVolumes         []DockerVolume      `json:"docker_volumes"`
+	DockerParams          map[string]string   `json:"docker_parameters"`
+	DockerParamsKeys      []string
+	Debug                 bool `json:"debug"`
 }
 
 type HealthCheck struct {
-  Protocol               string `json:"protocol"`
-  Path                   string `json:"path"`
-  Command                string `json:"command"`
-  GracePeriodSeconds     int    `json:"grace_period_seconds"`
-  IntervalSeconds        int    `json:"interval_seconds"`
-  Port                   int    `json:"port"`
-  PortIndex              int    `json:"port_index"`
-  TimeoutSeconds         int    `json:"timeout_seconds"`
-  MaxConsecutiveFailures int    `json:"max_consecutive_failures"`
+	Protocol               string `json:"protocol"`
+	Path                   string `json:"path"`
+	Command                string `json:"command"`
+	GracePeriodSeconds     int    `json:"grace_period_seconds"`
+	IntervalSeconds        int    `json:"interval_seconds"`
+	Port                   int    `json:"port"`
+	PortIndex              int    `json:"port_index"`
+	TimeoutSeconds         int    `json:"timeout_seconds"`
+	MaxConsecutiveFailures int    `json:"max_consecutive_failures"`
 }
 
 type Constraint struct {
-  Field    string `json:"field"`
-  Operator string `json:"operator"`
-  Value    string `json:"value"`
+	Field    string `json:"field"`
+	Operator string `json:"operator"`
+	Value    string `json:"value"`
 }
 
 type Fetch struct {
-  Uri        string `json:"uri"`
-  Executable bool   `json:"executable"`
-  Extract    bool   `json:"extract"`
-  Cache      bool   `json:"cache"`
+	Uri        string `json:"uri"`
+	Executable bool   `json:"executable"`
+	Extract    bool   `json:"extract"`
+	Cache      bool   `json:"cache"`
 }
 
 type DockerPortMapping struct {
-  ContainerPort int    `json:"container_port"`
-  HostPort      int    `json:"host_port"`
-  ServicePort   int    `json:"service_port"`
-  Protocol      string `json:"protocol"`
+	ContainerPort int    `json:"container_port"`
+	HostPort      int    `json:"host_port"`
+	ServicePort   int    `json:"service_port"`
+	Protocol      string `json:"protocol"`
 }
 
 type DockerVolume struct {
-  ContainerPath string `json:"container_path"`
-  HostPath      string `json:"host_path"`
-  Mode          string `json:"mode"`
+	ContainerPath string `json:"container_path"`
+	HostPath      string `json:"host_path"`
+	Mode          string `json:"mode"`
 }
 
 const applicationDefinition = `

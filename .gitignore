@@ -24,5 +24,4 @@ _testmain.go
 *.prof
 
 coverage.out
-.vscode
 drone-marathon
