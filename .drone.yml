@@ -14,7 +14,7 @@ pipeline:
   docker:
     storage_driver: overlay
     repo: plugins/marathon
-    tag: [ "latest", "0.5" ]
+    tags: [ "latest", "0.5" ]
     when:
       branch: master
       event: push
