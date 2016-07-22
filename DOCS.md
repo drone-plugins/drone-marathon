@@ -1,7 +1,8 @@
+Use this plugin for deploying applications to [Marathon](https://mesosphere.github.io/marathon/).
 
-This plugin can be used to deploy applications to [Marathon](https://mesosphere.github.io/marathon/).
+## Config
 
-The following parameters are used to configure this plugin:
+The following parameters are used to configure the plugin:
 
 | Parameter     | Description                | |
 |---------------|----------------------------|-------
@@ -59,12 +60,39 @@ The following parameters are used to configure this plugin:
 |`docker_parameters`          | a map of arbitrary parameters to be passed to docker CLI |
 |`debug`                      | print request and response info |
 
+The following secret values can be set to configure the plugin.
 
-The following are sample configuration for your .drone.yml file.
+* **MARATHON_SERVER** - corresponds to **server**
+* **MARATHON_USERNAME** - corresponds to **username**
+* **MARATHON_PASSWORD** - corresponds to **password**
 
-*Simple deploy using a Docker image*
+It is highly recommended to put the **MARATHON_USERNAME** and
+**MARATHON_PASSWORD** into secrets so it is not exposed to users. This can be
+done using the drone-cli.
+
+```bash
+drone secret add --image=marathon \
+    octocat/hello-world MARATHON_USERNAME octocat
+
+drone secret add --image=marathon \
+    octocat/hello-world MARATHON_PASSWORD pa55word
+```
+
+Then sign the YAML file after all secrets are added.
+
+```bash
+drone sign octocat/hello-world
+```
+
+See [secrets](http://readme.drone.io/0.5/usage/secrets/) for additional
+information on secrets
+
+## Example
+
+Simple deploy using a Docker image:
 
 ```yaml
+pipeline:
   marathon:
     server: http://marathon.mycluster.io:8080
     id: myapp
@@ -75,9 +103,10 @@ The following are sample configuration for your .drone.yml file.
     cmd: while [ true ] ; do echo 'Hello Drone' ; sleep 5 ; done
 ```
 
-*More complicate deploy*
+More complicated docker deployment:
 
 ```yaml
+pipeline:
   marathon:
     server: http://marathon.mycluster.io:8080
     id: myapp
