@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"github.com/drone-plugins/drone-marathon/marathon"
 
 	_ "github.com/joho/godotenv/autoload"
