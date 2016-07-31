@@ -1,28 +1,33 @@
 # drone-marathon
 
 [![Build Status](http://beta.drone.io/api/badges/drone-plugins/drone-marathon/status.svg)](http://beta.drone.io/drone-plugins/drone-marathon)
-[![Coverage Status](https://aircover.co/badges/drone-plugins/drone-marathon/coverage.svg)](https://aircover.co/drone-plugins/drone-marathon)
-[![](https://badge.imagelayers.io/plugins/marathon:latest.svg)](https://imagelayers.io/?images=plugins/marathon:latest 'Get your own badge on imagelayers.io')
+[![Go Doc](https://godoc.org/github.com/drone-plugins/drone-marathon?status.svg)](http://godoc.org/github.com/drone-plugins/drone-marathon)
+[![Go Report](https://goreportcard.com/badge/github.com/drone-plugins/drone-marathon)](https://goreportcard.com/report/github.com/drone-plugins/drone-marathon)
+[![Join the chat at https://gitter.im/drone/drone](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/drone/drone)
 
-Drone plugin to deploy applications to [Marathon](https://mesosphere.github.io/marathon/). For the usage information and a listing of the available options please take a look at [the docs](DOCS.md).
+Drone plugin to deploy applications to Marathon. For the usage information and
+a listing of the available options please take a look at [the docs](DOCS.md).
 
 ## Build
 
-Build the binary with the following command:
+Build the binary with the following commands:
 
 ```
-make build
+go build
+go test
 ```
 
 ## Docker
 
-Build the docker image with the following command:
+Build the docker image with the following commands:
 
 ```
-make docker
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo
+docker build --rm=true -t plugins/marathon .
 ```
 
-Please note incorrectly building the image for the correct x64 linux and with GCO disabled will result in an error when running the Docker image:
+Please note incorrectly building the image for the correct x64 linux and with
+GCO disabled will result in an error when running the Docker image:
 
 ```
 docker: Error response from daemon: Container command
@@ -31,7 +36,7 @@ docker: Error response from daemon: Container command
 
 ## Usage
 
-Build and publish from your current working directory:
+Execute from the working directory:
 
 ```
 docker run --rm \

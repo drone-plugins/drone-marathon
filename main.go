@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"github.com/drone-plugins/drone-marathon/marathon"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -24,17 +24,17 @@ func main() {
 		cli.StringFlag{
 			Name:   "server",
 			Usage:  "marathon server url",
-			EnvVar: "PLUGIN_SERVER",
+			EnvVar: "PLUGIN_SERVER,MARATHON_SERVER",
 		},
 		cli.StringFlag{
 			Name:   "username",
 			Usage:  "authentication username",
-			EnvVar: "PLUGIN_USERNAME",
+			EnvVar: "PLUGIN_USERNAME,MARATHON_USERNAME",
 		},
 		cli.StringFlag{
 			Name:   "password",
 			Usage:  "authentication password",
-			EnvVar: "PLUGIN_PASSWORD",
+			EnvVar: "PLUGIN_PASSWORD,MARATHON_PASSWORD",
 		},
 		cli.StringFlag{
 			Name:   "id",
