@@ -7,7 +7,6 @@
 [![](https://images.microbadger.com/badges/image/plugins/marathon.svg)](https://microbadger.com/images/plugins/marathon "Get your own image badge on microbadger.com")
 [![Go Doc](https://godoc.org/github.com/drone-plugins/drone-marathon?status.svg)](http://godoc.org/github.com/drone-plugins/drone-marathon)
 [![Go Report](https://goreportcard.com/badge/github.com/drone-plugins/drone-marathon)](https://goreportcard.com/report/github.com/drone-plugins/drone-marathon)
-[![](https://images.microbadger.com/badges/image/plugins/marathon.svg)](https://microbadger.com/images/plugins/marathon "Get your own image badge on microbadger.com")
 
 Drone plugin to deploy applications to [Marathon](https://mesosphere.github.io/marathon/). For the usage information and a listing of the available options please take a look at [the docs](DOCS.md).
 
