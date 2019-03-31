@@ -12,14 +12,16 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-var build string // build number set at compile-time
+var (
+	version = "unknown"
+)
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "marathon"
 	app.Usage = "marathon plugin"
 	app.Action = run
-	app.Version = "1.0.0+" + build
+	app.Version = version
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "server",

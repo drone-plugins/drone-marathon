@@ -8,36 +8,35 @@
 [![Go Doc](https://godoc.org/github.com/drone-plugins/drone-marathon?status.svg)](http://godoc.org/github.com/drone-plugins/drone-marathon)
 [![Go Report](https://goreportcard.com/badge/github.com/drone-plugins/drone-marathon)](https://goreportcard.com/report/github.com/drone-plugins/drone-marathon)
 
-Drone plugin to deploy applications to [Marathon](https://mesosphere.github.io/marathon/). For the usage information and a listing of the available options please take a look at [the docs](DOCS.md).
+Drone plugin to deploy applications to [Marathon](https://mesosphere.github.io/marathon/). For the usage information and a listing of the available options please take a look at [the docs](http://plugins.drone.io/drone-plugins/drone-marathon/).
 
 ## Build
 
 Build the binary with the following command:
 
-```
-make build
+```console
+export GOOS=linux
+export GOARCH=amd64
+export CGO_ENABLED=0
+export GO111MODULE=on
+
+go build -v -a -tags netgo -o release/linux/amd64/drone-marathon
 ```
 
 ## Docker
 
 Build the Docker image with the following command:
 
-```
-make docker
-```
-
-Please note incorrectly building the image for the correct x64 linux and with CGO disabled will result in an error when running the Docker image:
-
-```
-docker: Error response from daemon: Container command
-'/bin/drone-marathon' not found or does not exist..
+```console
+docker build \
+  --label org.label-schema.build-date=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
+  --label org.label-schema.vcs-ref=$(git rev-parse --short HEAD) \
+  --file docker/Dockerfile.linux.amd64 --tag plugins/marathon .
 ```
 
 ## Usage
 
-Build and publish from your current working directory:
-
-```
+```console
 docker run --rm \
   -e PLUGIN_SERVER=http://marathon.mycluster.io:8080 \
   -e PLUGIN_ID=myapp \
