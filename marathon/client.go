@@ -2,14 +2,16 @@ package marathon
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
-  "log"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"text/template"
 )
 
 type Client interface {
-	ReadMarathonFile() ([]byte, error)
+	ReadMarathonFile() (string, error)
 	CreateOrUpdateApplication() error
 }
 
@@ -21,13 +23,25 @@ func NewClient(params *Marathon) Client {
 	return &client{params}
 }
 
-func (c *client) ReadMarathonFile() ([]byte, error) {
-  log.Printf("Params: %v", c.params)
-  data, err := ioutil.ReadFile(c.params.MarathonFile)
-  if err != nil {
-    return nil, err
+func (c *client) ReadMarathonFile() (string, error) {
+  if c.params.Debug {
+    log.Printf("Params: %v", c.params)
   }
-	return data, nil
+	data, err := ioutil.ReadFile(c.params.MarathonFile)
+	if err != nil {
+		return "", err
+	}
+
+	tmpl, err := template.New("marathon").Parse(string(data))
+	if err != nil {
+		return "", err
+	}
+	buf := new(bytes.Buffer)
+	err = tmpl.Execute(buf, *c.params)
+	if err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }
 
 func (c *client) CreateOrUpdateApplication() error {
@@ -37,25 +51,30 @@ func (c *client) CreateOrUpdateApplication() error {
 	}
 
 	if c.params.Debug {
-		fmt.Println("Request", string(groupDefinition))
+		fmt.Println("Request", groupDefinition)
 	}
 
-  status, body, err := c.sendToServer("PUT", "/v2/groups/", groupDefinition)
-  if err != nil {
-    return err
-  }
-
-	if c.params.Debug {
-		if err == nil {
-			fmt.Printf("Response (%v): %s\n", status, body)
-		} else {
-			fmt.Println("Error:", err)
-		}
+	if c.params.GroupName == "" {
+		return errors.New("Group name is required")
 	}
 
-	if err == nil && status != http.StatusCreated && status != http.StatusOK {
-		err = fmt.Errorf("Response (%v): %s\n", status, body)
-	}
+  log.Println("Would execute: /v2/groups/"+c.params.GroupName+"?force=true")
+	//status, body, err := c.sendToServer("PUT", "/v2/groups/"+c.params.GroupName+"?force=true", []byte(groupDefinition))
+	//if err != nil {
+	//	return err
+	//}
+
+	//if c.params.Debug {
+	//	if err == nil {
+	//		fmt.Printf("Response (%v): %s\n", status, body)
+	//	} else {
+	//		fmt.Println("Error:", err)
+	//	}
+	//}
+
+	//if err == nil && status != http.StatusCreated && status != http.StatusOK {
+	//	err = fmt.Errorf("Response (%v): %s\n", status, body)
+	//}
 
 	return err
 }

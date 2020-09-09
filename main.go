@@ -1,13 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 
-	"github.com/urfave/cli"
 	"github.com/FundingCircle/drone-marathon/marathon"
+	"github.com/urfave/cli"
 
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -31,7 +29,22 @@ func main() {
 		cli.StringFlag{
 			Name:   "marathonfile",
 			Usage:  "file to send to marathon",
-			EnvVar: "PLUGIN_MARATHON_FILE",
+			EnvVar: "PLUGIN_MARATHONFILE",
+		},
+		cli.StringFlag{
+			Name:   "group_name",
+			Usage:  "marathon group name to post to",
+			EnvVar: "PLUGIN_GROUP_NAME",
+		},
+		cli.StringFlag{
+			Name:   "drone_branch",
+			Usage:  "the branch for the pull request",
+			EnvVar: "DRONE_BRANCH",
+		},
+		cli.StringFlag{
+			Name:   "drone_build_number",
+			Usage:  "the build number for the current drone build",
+			EnvVar: "DRONE_BUILD_NUMBER",
 		},
 		cli.BoolFlag{
 			Name:   "debug",
@@ -45,9 +58,12 @@ func main() {
 func run(c *cli.Context) error {
 	plugin := Plugin{
 		Marathon: marathon.Marathon{
-			Server:                c.String("server"),
-      MarathonFile:          c.String("marathonfile"),
-			Debug:                 c.Bool("debug"),
+			Server:       c.String("server"),
+			MarathonFile: c.String("marathonfile"),
+			GroupName:    c.String("group_name"),
+      Branch:       c.String("drone_branch"),
+      BuildNumber:  c.String("drone_build_number"),
+			Debug:        c.Bool("debug"),
 		},
 	}
 
@@ -58,20 +74,3 @@ func run(c *cli.Context) error {
 
 	return nil
 }
-
-func convertToSlice(s string) []string {
-	result := []string{}
-	if s != "" {
-		result = strings.Split(s, ",")
-	}
-	return result
-}
-
-func convertToMap(s string) map[string]string {
-	result := make(map[string]string)
-	if s != "" {
-		json.Unmarshal([]byte(s), &result)
-	}
-	return result
-}
-
