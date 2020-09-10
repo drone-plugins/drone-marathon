@@ -1,6 +1,5 @@
 pipeline:
   eclint:
-    group: setup
     image: node:12-alpine
     commands:
       - apk add --update git
@@ -9,47 +8,66 @@ pipeline:
 
   vet:
     image: golang:1.11
-    commands:
-    - go vet ./...
+    commands: go vet ./...
     environment:
       GO111MODULE: "on"
-  
+
   test:
     image: golang:1.11
-    commands:
-    - go test -cover ./...
+    commands: go test -cover ./...
     environment:
       GO111MODULE: "on"
 
   build-push:
     image: golang:1.11
-    commands:
-    - "go build -v -ldflags \"-X main.version=${DRONE_COMMIT_SHA:0:8}\" -a -tags netgo -o release/linux/amd64/drone-marathon"
+    commands: "go build -v -ldflags \"-X main.version=${DRONE_COMMIT_SHA:0:8}\" -a -tags netgo -o release/linux/amd64/drone-marathon"
     environment:
       CGO_ENABLED: "0"
       GO111MODULE: "on"
     when:
       event:
-        exclude:
-        - tag
+        exclude: tag
 
   build-tag:
     image: golang:1.11
-    commands:
-    - "go build -v -ldflags \"-X main.version=${DRONE_TAG##v}\" -a -tags netgo -o release/linux/amd64/drone-marathon"
+    commands: "go build -v -ldflags \"-X main.version=${DRONE_TAG##v}\" -a -tags netgo -o release/linux/amd64/drone-marathon"
     environment:
       CGO_ENABLED: "0"
       GO111MODULE: "on"
     when:
-      event:
-      - tag
+      event: tag
 
   executable:
     image: golang:1.11
     commands:
     - ./release/linux/amd64/drone-marathon --help
 
-  publish:
+  publish-push:
+    <<: *publish
+    cache_from:
+      - quay.io/fundingcircle/${DRONE_REPO_NAME}:latest
+      - quay.io/fundingcircle/${DRONE_REPO_NAME}:${DRONE_BRANCH//\//-}
+    tags:
+      - ${DRONE_BRANCH//\//-}_${DRONE_BUILD_NUMBER}
+      - ${DRONE_BRANCH//\//-}
+      - ${DRONE_COMMIT_SHA}
+    <<: *when-push
+
+  publish-tag:
+    <<: *publish
+    auto_tag: true
+    when:
+      event: tag
+
+# -------------------------------------------------------------------------------
+# Anchors
+# -------------------------------------------------------------------------------
+anchors:
+  when-push: &when-push
+    when:
+      event: push
+
+  publish: &publish
     image: plugins/docker:linux-amd64
     dockerfile: docker/Dockerfile.linux.amd64
     secrets:
@@ -59,20 +77,3 @@ pipeline:
         target: docker_password
     repo: quay.io/fundingcircle/${DRONE_REPO_NAME}
     registry: https://quay.io
-    cache_from:
-      - quay.io/fundingcircle/${DRONE_REPO_NAME}:latest
-      - quay.io/fundingcircle/${DRONE_REPO_NAME}:${DRONE_BRANCH//\//-}
-    tags:
-      - ${DRONE_BRANCH//\//-}_${DRONE_BUILD_NUMBER}
-      - ${DRONE_BRANCH//\//-}
-      - ${DRONE_COMMIT_SHA}
-      - latest
-    <<: *when-push
-
-# -------------------------------------------------------------------------------
-# Anchors
-# -------------------------------------------------------------------------------
-anchors:
-  when-push: &when-push
-    when:
-      event: push

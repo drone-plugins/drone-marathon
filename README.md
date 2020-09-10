@@ -1,6 +1,6 @@
 # Drone-Marathon
 
-Drone plugin to deploy applications to [Marathon](https://mesosphere.github.io/marathon/). 
+Drone plugin to deploy applications to [Marathon](https://mesosphere.github.io/marathon/).
 
 The plugin will post a marathon file with templating to the `/v2/groups/$group_name` endpoint.
 
@@ -129,3 +129,15 @@ docker run --rm \
   -w $(pwd) \
   plugins/marathon
 ```
+
+## Release
+
+Releases use [semver](https://semver.org/) and are triggered with git tags, as shown in the example below:
+
+```console
+git checkout master
+git tag 1.2.3
+git push --tags
+```
+
+The above release would be accessible via the `latest`, `1`, `1.2`, and `1.2.3` Docker tags.
