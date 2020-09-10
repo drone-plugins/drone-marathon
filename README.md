@@ -79,11 +79,12 @@ The following drone environment variables are picked up and translated into the 
 | ------------------------- | ----------------- | -------------------------------------------- |
 | DRONE_BRANCH              | Branch            | the branch for the pull request              |
 | DRONE_BUILD_NUMBER        | BuildNumber       | the build number for the current drone build |
-| DRONE_COMMIT              | Commit            | git commit of the current build              |
+| DRONE_COMMIT_SHA          | CommitSha         | git commit sha of the current build          |
 | DRONE_COMMIT_AUTHOR       | CommitAuthor      | git commit username of the current build     |
 | DRONE_COMMIT_AUTHOR_EMAIL | CommitAuthorEmail | git commit email of the current build        |
 | DRONE_COMMIT_BRANCH       | CommitBranch      | target branch for the PR                     |
 | DRONE_COMMIT_LINK         | CommitLink        | link to github PR                            |
+| DRONE_DEPLOY_TO           | DeployTo          | target deployment environment for promotions |
 | DRONE_TAG                 | Tag               | git tag for this build                       |
 
 # Development

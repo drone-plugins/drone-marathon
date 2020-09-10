@@ -47,9 +47,9 @@ func main() {
 			EnvVar: "DRONE_BUILD_NUMBER",
 		},
 		cli.StringFlag{
-			Name:   "drone_commit",
-			Usage:  "git commit of the current build",
-			EnvVar: "DRONE_COMMIT",
+			Name:   "drone_commit_sha",
+			Usage:  "git commit sha of the current build",
+			EnvVar: "DRONE_COMMIT_SHA",
 		},
 		cli.StringFlag{
 			Name:   "drone_commit_author",
@@ -70,6 +70,11 @@ func main() {
 			Name:   "drone_commit_link",
 			Usage:  "link to github PR",
 			EnvVar: "DRONE_COMMIT_LINK",
+		},
+		cli.StringFlag{
+			Name:   "drone_deploy_to",
+			Usage:  "target deployment environment for promotions",
+			EnvVar: "DRONE_DEPLOY_TO",
 		},
 		cli.StringFlag{
 			Name:   "drone_tag",
@@ -93,7 +98,7 @@ func run(c *cli.Context) error {
 			GroupName:         c.String("group_name"),
 			Branch:            c.String("drone_branch"),
 			BuildNumber:       c.String("drone_build_number"),
-			Commit:            c.String("drone_commit"),
+			CommitSha:         c.String("drone_commit_sha"),
 			CommitAuthor:      c.String("drone_commit_author"),
 			CommitAuthorEmail: c.String("drone_commit_author_email"),
 			CommitBranch:      c.String("drone_commit_branch"),

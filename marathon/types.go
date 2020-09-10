@@ -1,16 +1,17 @@
 package marathon
 
 type Marathon struct {
-	Server            string `json:"server"`
-	MarathonFile      string `json:"marathonfile"`
-	GroupName         string `json:"group_name"`
 	Branch            string `json:"branch"`
 	BuildNumber       string `json:"build_number"`
-	Commit            string `json:"commit"`
+	CommitSha         string `json:"commit_sha"`
 	CommitAuthor      string `json:"commit_author"`
 	CommitAuthorEmail string `json:"commit_author_email"`
 	CommitBranch      string `json:"commit_branch"`
 	CommitLink        string `json:"commit_link"`
-	Tag               string `json:"tag"`
 	Debug             bool   `json:"debug"`
+  DeployTo          string `json:"deploy_to"`
+	GroupName         string `json:"group_name"`
+	MarathonFile      string `json:"marathonfile"`
+	Server            string `json:"server"`
+	Tag               string `json:"tag"`
 }
