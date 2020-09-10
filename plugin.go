@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/drone-plugins/drone-marathon/marathon"
+	"github.com/FundingCircle/drone-marathon/marathon"
 )
 
 type Plugin struct {

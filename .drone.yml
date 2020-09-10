@@ -1,332 +1,78 @@
----
-kind: pipeline
-name: testing
+pipeline:
+  eclint:
+    group: setup
+    image: node:12-alpine
+    commands:
+      - apk add --update git
+      - npx eclint check $(git ls-files)
+    <<: *when-push
 
-platform:
-  os: linux
-  arch: amd64
+  vet:
+    image: golang:1.11
+    commands:
+    - go vet ./...
+    environment:
+      GO111MODULE: "on"
+  
+  test:
+    image: golang:1.11
+    commands:
+    - go test -cover ./...
+    environment:
+      GO111MODULE: "on"
 
-steps:
-- name: vet
-  pull: always
-  image: golang:1.11
-  commands:
-  - go vet ./...
-  environment:
-    GO111MODULE: on
-  volumes:
-  - name: gopath
-    path: /go
+  build-push:
+    image: golang:1.11
+    commands:
+    - "go build -v -ldflags \"-X main.version=${DRONE_COMMIT_SHA:0:8}\" -a -tags netgo -o release/linux/amd64/drone-marathon"
+    environment:
+      CGO_ENABLED: "0"
+      GO111MODULE: "on"
+    when:
+      event:
+        exclude:
+        - tag
 
-- name: test
-  pull: always
-  image: golang:1.11
-  commands:
-  - go test -cover ./...
-  environment:
-    GO111MODULE: on
-  volumes:
-  - name: gopath
-    path: /go
-
-volumes:
-- name: gopath
-  temp: {}
-
-trigger:
-  ref:
-  - refs/heads/master
-  - "refs/tags/**"
-  - "refs/pull/**"
-
----
-kind: pipeline
-name: linux-amd64
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: build-push
-  pull: always
-  image: golang:1.11
-  commands:
-  - "go build -v -ldflags \"-X main.version=${DRONE_COMMIT_SHA:0:8}\" -a -tags netgo -o release/linux/amd64/drone-marathon"
-  environment:
-    CGO_ENABLED: 0
-    GO111MODULE: on
-  when:
-    event:
-      exclude:
+  build-tag:
+    image: golang:1.11
+    commands:
+    - "go build -v -ldflags \"-X main.version=${DRONE_TAG##v}\" -a -tags netgo -o release/linux/amd64/drone-marathon"
+    environment:
+      CGO_ENABLED: "0"
+      GO111MODULE: "on"
+    when:
+      event:
       - tag
 
-- name: build-tag
-  pull: always
-  image: golang:1.11
-  commands:
-  - "go build -v -ldflags \"-X main.version=${DRONE_TAG##v}\" -a -tags netgo -o release/linux/amd64/drone-marathon"
-  environment:
-    CGO_ENABLED: 0
-    GO111MODULE: on
-  when:
-    event:
-    - tag
+  executable:
+    image: golang:1.11
+    commands:
+    - ./release/linux/amd64/drone-marathon --help
 
-- name: executable
-  pull: always
-  image: golang:1.11
-  commands:
-  - ./release/linux/amd64/drone-marathon --help
-
-- name: dryrun
-  pull: always
-  image: plugins/docker:linux-amd64
-  settings:
-    daemon_off: false
+  publish:
+    image: plugins/docker:linux-amd64
     dockerfile: docker/Dockerfile.linux.amd64
-    dry_run: true
-    password:
-      from_secret: docker_password
-    repo: plugins/marathon
-    tags: linux-amd64
-    username:
-      from_secret: docker_username
-  when:
-    event:
-    - pull_request
+    secrets:
+      - source: quay_username
+        target: docker_username
+      - source: quay_password
+        target: docker_password
+    repo: quay.io/fundingcircle/${DRONE_REPO_NAME}
+    registry: https://quay.io
+    cache_from:
+      - quay.io/fundingcircle/${DRONE_REPO_NAME}:latest
+      - quay.io/fundingcircle/${DRONE_REPO_NAME}:${DRONE_BRANCH//\//-}
+    tags:
+      - ${DRONE_BRANCH//\//-}_${DRONE_BUILD_NUMBER}
+      - ${DRONE_BRANCH//\//-}
+      - ${DRONE_COMMIT_SHA}
+      - latest
+    <<: *when-push
 
-- name: publish
-  pull: always
-  image: plugins/docker:linux-amd64
-  settings:
-    auto_tag: true
-    auto_tag_suffix: linux-amd64
-    daemon_off: false
-    dockerfile: docker/Dockerfile.linux.amd64
-    password:
-      from_secret: docker_password
-    repo: plugins/marathon
-    username:
-      from_secret: docker_username
-  when:
-    event:
-      exclude:
-      - pull_request
-
-trigger:
-  ref:
-  - refs/heads/master
-  - "refs/tags/**"
-  - "refs/pull/**"
-
-depends_on:
-- testing
-
----
-kind: pipeline
-name: linux-arm64
-
-platform:
-  os: linux
-  arch: arm64
-
-steps:
-- name: build-push
-  pull: always
-  image: golang:1.11
-  commands:
-  - "go build -v -ldflags \"-X main.version=${DRONE_COMMIT_SHA:0:8}\" -a -tags netgo -o release/linux/arm64/drone-marathon"
-  environment:
-    CGO_ENABLED: 0
-    GO111MODULE: on
-  when:
-    event:
-      exclude:
-      - tag
-
-- name: build-tag
-  pull: always
-  image: golang:1.11
-  commands:
-  - "go build -v -ldflags \"-X main.version=${DRONE_TAG##v}\" -a -tags netgo -o release/linux/arm64/drone-marathon"
-  environment:
-    CGO_ENABLED: 0
-    GO111MODULE: on
-  when:
-    event:
-    - tag
-
-- name: executable
-  pull: always
-  image: golang:1.11
-  commands:
-  - ./release/linux/arm64/drone-marathon --help
-
-- name: dryrun
-  pull: always
-  image: plugins/docker:linux-arm64
-  settings:
-    daemon_off: false
-    dockerfile: docker/Dockerfile.linux.arm64
-    dry_run: true
-    password:
-      from_secret: docker_password
-    repo: plugins/marathon
-    tags: linux-arm64
-    username:
-      from_secret: docker_username
-  when:
-    event:
-    - pull_request
-
-- name: publish
-  pull: always
-  image: plugins/docker:linux-arm64
-  settings:
-    auto_tag: true
-    auto_tag_suffix: linux-arm64
-    daemon_off: false
-    dockerfile: docker/Dockerfile.linux.arm64
-    password:
-      from_secret: docker_password
-    repo: plugins/marathon
-    username:
-      from_secret: docker_username
-  when:
-    event:
-      exclude:
-      - pull_request
-
-trigger:
-  ref:
-  - refs/heads/master
-  - "refs/tags/**"
-  - "refs/pull/**"
-
-depends_on:
-- testing
-
----
-kind: pipeline
-name: linux-arm
-
-platform:
-  os: linux
-  arch: arm
-
-steps:
-- name: build-push
-  pull: always
-  image: golang:1.11
-  commands:
-  - "go build -v -ldflags \"-X main.version=${DRONE_COMMIT_SHA:0:8}\" -a -tags netgo -o release/linux/arm/drone-marathon"
-  environment:
-    CGO_ENABLED: 0
-    GO111MODULE: on
-  when:
-    event:
-      exclude:
-      - tag
-
-- name: build-tag
-  pull: always
-  image: golang:1.11
-  commands:
-  - "go build -v -ldflags \"-X main.version=${DRONE_TAG##v}\" -a -tags netgo -o release/linux/arm/drone-marathon"
-  environment:
-    CGO_ENABLED: 0
-    GO111MODULE: on
-  when:
-    event:
-    - tag
-
-- name: executable
-  pull: always
-  image: golang:1.11
-  commands:
-  - ./release/linux/arm/drone-marathon --help
-
-- name: dryrun
-  pull: always
-  image: plugins/docker:linux-arm
-  settings:
-    daemon_off: false
-    dockerfile: docker/Dockerfile.linux.arm
-    dry_run: true
-    password:
-      from_secret: docker_password
-    repo: plugins/marathon
-    tags: linux-arm
-    username:
-      from_secret: docker_username
-  when:
-    event:
-    - pull_request
-
-- name: publish
-  pull: always
-  image: plugins/docker:linux-arm
-  settings:
-    auto_tag: true
-    auto_tag_suffix: linux-arm
-    daemon_off: false
-    dockerfile: docker/Dockerfile.linux.arm
-    password:
-      from_secret: docker_password
-    repo: plugins/marathon
-    username:
-      from_secret: docker_username
-  when:
-    event:
-      exclude:
-      - pull_request
-
-trigger:
-  ref:
-  - refs/heads/master
-  - "refs/tags/**"
-  - "refs/pull/**"
-
-depends_on:
-- testing
-
----
-kind: pipeline
-name: notifications
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: manifest
-  pull: always
-  image: plugins/manifest
-  settings:
-    auto_tag: true
-    ignore_missing: true
-    password:
-      from_secret: docker_password
-    spec: docker/manifest.tmpl
-    username:
-      from_secret: docker_username
-
-- name: microbadger
-  pull: always
-  image: plugins/webhook
-  settings:
-    urls:
-      from_secret: microbadger_url
-
-trigger:
-  ref:
-  - refs/heads/master
-  - "refs/tags/**"
-
-depends_on:
-- linux-amd64
-- linux-arm64
-- linux-arm
-
-...
+# -------------------------------------------------------------------------------
+# Anchors
+# -------------------------------------------------------------------------------
+anchors:
+  when-push: &when-push
+    when:
+      event: push

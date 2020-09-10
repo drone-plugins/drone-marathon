@@ -1,14 +1,93 @@
-# drone-marathon
+# Drone-Marathon
 
-[![Build Status](http://cloud.drone.io/api/badges/drone-plugins/drone-marathon/status.svg)](http://cloud.drone.io/drone-plugins/drone-marathon)
-[![Gitter chat](https://badges.gitter.im/drone/drone.png)](https://gitter.im/drone/drone)
-[![Join the discussion at https://discourse.drone.io](https://img.shields.io/badge/discourse-forum-orange.svg)](https://discourse.drone.io)
-[![Drone questions at https://stackoverflow.com](https://img.shields.io/badge/drone-stackoverflow-orange.svg)](https://stackoverflow.com/questions/tagged/drone.io)
-[![](https://images.microbadger.com/badges/image/plugins/marathon.svg)](https://microbadger.com/images/plugins/marathon "Get your own image badge on microbadger.com")
-[![Go Doc](https://godoc.org/github.com/drone-plugins/drone-marathon?status.svg)](http://godoc.org/github.com/drone-plugins/drone-marathon)
-[![Go Report](https://goreportcard.com/badge/github.com/drone-plugins/drone-marathon)](https://goreportcard.com/report/github.com/drone-plugins/drone-marathon)
+Drone plugin to deploy applications to [Marathon](https://mesosphere.github.io/marathon/). 
 
-Drone plugin to deploy applications to [Marathon](https://mesosphere.github.io/marathon/). For the usage information and a listing of the available options please take a look at [the docs](http://plugins.drone.io/drone-plugins/drone-marathon/).
+The plugin will post a marathon file with templating to the `/v2/groups/$group_name` endpoint.
+
+## Drone 0.8 configuration
+
+Add this stub to a Drone 0.8 configuration file:
+
+```
+pipeline:
+  marathon_staging:
+    image: quay.io/fundingcircle/drone-marathon
+    server: https://marathon.example.com
+    marathonfile: marathon.json
+    group_name: application_group
+    debug: true
+```
+
+## Marathon file
+
+The marathon file is a JSON file that can be templated with Drone's environment variables. For example:
+
+```
+{
+  "apps": [
+    {
+      "args": [
+        "/run"
+      ],
+      "constraints": [
+        [
+          "type",
+          "LIKE",
+          "generic"
+        ]
+      ],
+      "container": {
+        "docker": {
+          "forcePullImage": true,
+          "image": "docker.io/myuser/myapp:{{.Branch}}_{{.BuildNumber}}",
+          "portMappings": [
+            {
+              "hostPort": 0,
+              "name": "http"
+            }
+          ]
+        },
+        "type": "DOCKER"
+      },
+      "cpus": 0.2,
+      "healthChecks": [
+        {
+          "path": "/healthcheck",
+          "portIndex": 0
+        }
+      ],
+      "id": "web",
+      "instances": 1,
+      "labels": {
+        "tags": "http,public-http",
+        "team": "Drone Marathon contributors"
+      },
+      "mem": 400,
+      "uris": [
+        "file:///etc/mesos/.dockercfg"
+      ]
+    }
+  ]
+}
+```
+
+## Drone environment variables
+
+The following drone environment variables are picked up and translated into the corresponding template variable names:
+
+| Drone Env Var             | Template var      | Description                                  |
+| ------------------------- | ----------------- | -------------------------------------------- |
+| DRONE_BRANCH              | Branch            | the branch for the pull request              |
+| DRONE_BUILD_NUMBER        | BuildNumber       | the build number for the current drone build |
+| DRONE_COMMIT_SHA          | CommitSha         | git commit sha of the current build          |
+| DRONE_COMMIT_AUTHOR       | CommitAuthor      | git commit username of the current build     |
+| DRONE_COMMIT_AUTHOR_EMAIL | CommitAuthorEmail | git commit email of the current build        |
+| DRONE_COMMIT_BRANCH       | CommitBranch      | target branch for the PR                     |
+| DRONE_COMMIT_LINK         | CommitLink        | link to github PR                            |
+| DRONE_DEPLOY_TO           | DeployTo          | target deployment environment for promotions |
+| DRONE_TAG                 | Tag               | git tag for this build                       |
+
+# Development
 
 ## Build
 
