@@ -1,4 +1,12 @@
 pipeline:
+  eclint:
+    group: setup
+    image: node:12-alpine
+    commands:
+      - apk add --update git
+      - npx eclint check $(git ls-files)
+    <<: *when-push
+
   vet:
     image: golang:1.11
     commands:
@@ -68,12 +76,3 @@ anchors:
   when-push: &when-push
     when:
       event: push
-  when-feature-branch: &when-feature-branch
-    when:
-      event: push
-      branch:
-        exclude: master
-  when-master-branch: &when-master-branch
-    when:
-      event: push
-      branch: master
