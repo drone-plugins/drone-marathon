@@ -24,9 +24,9 @@ func NewClient(params *Marathon) Client {
 }
 
 func (c *client) ReadMarathonFile() (string, error) {
-  if c.params.Debug {
-    log.Printf("Params: %v", c.params)
-  }
+	if c.params.Debug {
+		log.Printf("Params: %v", c.params)
+	}
 	data, err := ioutil.ReadFile(c.params.MarathonFile)
 	if err != nil {
 		return "", err
@@ -58,23 +58,22 @@ func (c *client) CreateOrUpdateApplication() error {
 		return errors.New("Group name is required")
 	}
 
-  log.Println("Would execute: /v2/groups/"+c.params.GroupName+"?force=true")
-	//status, body, err := c.sendToServer("PUT", "/v2/groups/"+c.params.GroupName+"?force=true", []byte(groupDefinition))
-	//if err != nil {
-	//	return err
-	//}
+	status, body, err := c.sendToServer("PUT", "/v2/groups/"+c.params.GroupName+"?force=true", []byte(groupDefinition))
+	if err != nil {
+		return err
+	}
 
-	//if c.params.Debug {
-	//	if err == nil {
-	//		fmt.Printf("Response (%v): %s\n", status, body)
-	//	} else {
-	//		fmt.Println("Error:", err)
-	//	}
-	//}
+	if c.params.Debug {
+		if err == nil {
+			fmt.Printf("Response (%v): %s\n", status, body)
+		} else {
+			fmt.Println("Error:", err)
+		}
+	}
 
-	//if err == nil && status != http.StatusCreated && status != http.StatusOK {
-	//	err = fmt.Errorf("Response (%v): %s\n", status, body)
-	//}
+	if err == nil && status != http.StatusCreated && status != http.StatusOK {
+		err = fmt.Errorf("Response (%v): %s\n", status, body)
+	}
 
 	return err
 }
