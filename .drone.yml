@@ -77,3 +77,9 @@ anchors:
         target: docker_password
     repo: quay.io/fundingcircle/${DRONE_REPO_NAME}
     registry: https://quay.io
+    custom_labels:
+      org.opencontainers.image.url: ${DRONE_REPO_LINK}
+      org.opencontainers.image.source: ${DRONE_REMOTE_URL}
+      org.fundingcircle.image.manager: "platform-engineering@fundingcircle.com"
+      org.opencontainers.image.created: ${DRONE_BUILD_CREATED}
+      org.opencontainers.image.revision: ${DRONE_COMMIT_SHA}
