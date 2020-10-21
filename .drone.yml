@@ -52,6 +52,14 @@ pipeline:
       - ${DRONE_BRANCH//\//-}
       - ${DRONE_COMMIT_SHA}
     <<: *when-push
+  
+  scan-docker-image:
+    image: quay.io/fundingcircle/drone-prisma-cloud:1.0.0
+    repo: quay.io/fundingcircle/${DRONE_REPO_NAME}
+    registry: https://quay.io
+    secrets: [docker_username, docker_password, prisma_cloud_user, prisma_cloud_password]
+    tags: ${DRONE_COMMIT_SHA}
+    <<: *when-push
 
   publish-tag:
     <<: *publish
