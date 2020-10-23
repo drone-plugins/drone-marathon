@@ -7,3 +7,5 @@ LABEL maintainer="Drone.IO Community <drone-dev@googlegroups.com>" \
 
 ADD release/linux/arm/drone-marathon /bin/
 ENTRYPOINT ["/bin/drone-marathon"]
+
+USER nobody

@@ -8,3 +8,5 @@ LABEL maintainer="Drone.IO Community <drone-dev@googlegroups.com>" `
 
 ADD release/windows/amd64/drone-marathon.exe C:/bin/drone-marathon.exe
 ENTRYPOINT [ "C:\\bin\\drone-marathon.exe" ]
+
+USER nobody
