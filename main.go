@@ -6,10 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/codegangsta/cli"
 	"github.com/drone-plugins/drone-marathon/marathon"
-
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/urfave/cli"
 )
 
 var (
@@ -178,7 +176,7 @@ func main() {
 			EnvVar: "PLUGIN_DEBUG",
 		},
 	}
-	app.Run(os.Args)
+	_ = app.Run(os.Args)
 }
 
 func run(c *cli.Context) error {
@@ -236,7 +234,7 @@ func convertToSlice(s string) []string {
 func convertToMap(s string) map[string]string {
 	result := make(map[string]string)
 	if s != "" {
-		json.Unmarshal([]byte(s), &result)
+		_ = json.Unmarshal([]byte(s), &result)
 	}
 	return result
 }
@@ -244,7 +242,7 @@ func convertToMap(s string) map[string]string {
 func convertToFetchs(s string) []marathon.Fetch {
 	result := []marathon.Fetch{}
 	if s != "" {
-		json.Unmarshal([]byte(s), &result)
+		_ = json.Unmarshal([]byte(s), &result)
 	}
 	return result
 }
@@ -252,7 +250,7 @@ func convertToFetchs(s string) []marathon.Fetch {
 func convertToHealthChecks(s string) []marathon.HealthCheck {
 	result := []marathon.HealthCheck{}
 	if s != "" {
-		json.Unmarshal([]byte(s), &result)
+		_ = json.Unmarshal([]byte(s), &result)
 	}
 	return result
 }
@@ -260,7 +258,7 @@ func convertToHealthChecks(s string) []marathon.HealthCheck {
 func convertToConstraints(s string) []marathon.Constraint {
 	result := []marathon.Constraint{}
 	if s != "" {
-		json.Unmarshal([]byte(s), &result)
+		_ = json.Unmarshal([]byte(s), &result)
 	}
 	return result
 }
@@ -268,7 +266,7 @@ func convertToConstraints(s string) []marathon.Constraint {
 func convertToDockerPortMappings(s string) []marathon.DockerPortMapping {
 	result := []marathon.DockerPortMapping{}
 	if s != "" {
-		json.Unmarshal([]byte(s), &result)
+		_ = json.Unmarshal([]byte(s), &result)
 	}
 	return result
 }
@@ -276,7 +274,7 @@ func convertToDockerPortMappings(s string) []marathon.DockerPortMapping {
 func convertToDockerVolumes(s string) []marathon.DockerVolume {
 	result := []marathon.DockerVolume{}
 	if s != "" {
-		json.Unmarshal([]byte(s), &result)
+		_ = json.Unmarshal([]byte(s), &result)
 	}
 	return result
 }
