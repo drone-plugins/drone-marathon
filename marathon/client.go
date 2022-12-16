@@ -3,7 +3,7 @@ package marathon
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"text/template"
 )
@@ -100,7 +100,7 @@ func (c *client) CreateOrUpdateApplication() error {
 }
 
 func (c *client) sendToServer(action, path string, definition []byte) (int, string, error) {
-	req, err := http.NewRequest(action, c.params.Server+path, bytes.NewBuffer(definition))
+	req, _ := http.NewRequest(action, c.params.Server+path, bytes.NewBuffer(definition))
 	if c.params.Username != "" && c.params.Password != "" {
 		req.SetBasicAuth(c.params.Username, c.params.Password)
 	}
@@ -111,6 +111,6 @@ func (c *client) sendToServer(action, path string, definition []byte) (int, stri
 		return 0, "", err
 	}
 	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 	return resp.StatusCode, string(body), nil
 }
